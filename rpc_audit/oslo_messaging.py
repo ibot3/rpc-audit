@@ -14,12 +14,12 @@ from pycadf.resource import Resource
 from .os_map import rpc_method_to_cadf_action
 from .base import CADFBuilderEnv, BuilderType
 
-builder_empty = CADFBuilderEnv()
+builder = CADFBuilderEnv()
 
 # context:  {'rpc_client': ..., 'ctxt': ...}
 
 
-@builder_empty.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
+@builder.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
 def build_action(context, method, args, result=None):
     topic = context['rpc_client'].target.topic
 
@@ -34,7 +34,7 @@ def build_action(context, method, args, result=None):
     return UNKNOWN
 
 
-@builder_empty.builder(EVENT_KEYNAME_OUTCOME, BuilderType.REPLACE)
+@builder.builder(EVENT_KEYNAME_OUTCOME, BuilderType.REPLACE)
 def build_outcome(context, method, args, result=None):
     if result is None:
         return UNKNOWN
@@ -43,7 +43,7 @@ def build_outcome(context, method, args, result=None):
             return OUTCOME_SUCCESS
 
 
-@builder_empty.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
+@builder.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
 def build_initiator(context, method, args, result=None):
     id = context['ctxt'].user
     type_uri = ACCOUNT_USER
@@ -60,7 +60,7 @@ def build_initiator(context, method, args, result=None):
                     host=host)
 
 
-@builder_empty.builder(EVENT_KEYNAME_TARGET, BuilderType.REPLACE)
+@builder.builder(EVENT_KEYNAME_TARGET, BuilderType.REPLACE)
 def build_target(context, method, args, result=None):
     targets = []
 
@@ -89,7 +89,7 @@ def build_target(context, method, args, result=None):
     return targets
 
 
-@builder_empty.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE)
+@builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE)
 def build_attachments(context, method, args, result=None):
     attachments = [Attachment(name='project', content={
         'id': context['ctxt'].project,
@@ -101,6 +101,3 @@ def build_attachments(context, method, args, result=None):
     })]
 
     return attachments
-
-
-builder = builder_empty

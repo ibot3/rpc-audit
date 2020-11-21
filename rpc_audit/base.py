@@ -1,7 +1,6 @@
 import logging
 from enum import Enum
 from typing import Dict, List
-import datetime
 
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS
