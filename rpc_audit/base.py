@@ -60,12 +60,12 @@ class CADFBuilderEnv:
     builder_map: Dict[str, List[Builder]] = {}
 
     def __init__(self):
-        LOG.debug("BuiolderEnv Init")
+        LOG.debug("BuilderEnv Init")
 
-        def build_event_type(self, *args, **kwargs):
+        def build_event_type(*args, **kwargs):
             return EVENTTYPE_ACTIVITY
 
-        def build_tags(self, *args, **kwargs):
+        def build_tags(*args, **kwargs):
             return ['rpc']
 
         self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)

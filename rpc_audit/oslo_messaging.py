@@ -14,7 +14,7 @@ from pycadf.resource import Resource
 from .os_map import rpc_method_to_cadf_action
 from .base import CADFBuilderEnv, BuilderType
 
-builder = CADFBuilderEnv()
+builder_empty = CADFBuilderEnv()
 
 # context:  {'rpc_client': ..., 'ctxt': ...}
 
@@ -102,3 +102,4 @@ def build_attachments(context, method, args, result=None):
 
     return attachments
 
+builder = builder_empty
