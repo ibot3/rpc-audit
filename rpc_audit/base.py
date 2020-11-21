@@ -94,7 +94,7 @@ class CADFBuilderEnv:
 
         for key, value in context.items():
             if callable(getattr(value, "__dict__", None)):
-                value = value.__dict__()
+                value = value.__dict__
 
             LOG.debug("Building events, context[%s]: %s", key, value)
 

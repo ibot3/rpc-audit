@@ -12,7 +12,7 @@ from pycadf.resource import Resource
 
 
 from .os_map import rpc_method_to_cadf_action
-from .base import CADFBuilderEnv, BuilderType
+from .base import CADFBuilderEnv, BuilderType, LOG
 
 builder = CADFBuilderEnv()
 
@@ -45,6 +45,8 @@ def build_outcome(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
 def build_initiator(context, method, args, result=None):
+    LOG.debug("context[ctx]: %s", context['ctx'].__dict__)
+
     id = context['ctxt'].user
     type_uri = ACCOUNT_USER
     name = context['ctxt'].user_name
