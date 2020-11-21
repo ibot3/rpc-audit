@@ -102,7 +102,7 @@ def build_attachments(context, method, args, result=None):
         'domain': context['ctxt'].project_domain
     }), Attachment(name='request_hash', content={
         'algorithm': 'SHA256',
-        'hash': sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest()
+        'hash': str(sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest())
     }), Attachment(name='credential_info', content={
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,

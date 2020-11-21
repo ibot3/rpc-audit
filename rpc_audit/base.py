@@ -47,6 +47,8 @@ def merge_dict(source, destination):
 
 
 def build_event_from_data(event_data):
+    event_data_raw = event_data
+
     try:
         # Extract some attributes, because the have extra methods and cannot be used in the Event constructor
         attachments = event_data.get('attachments', [])
@@ -64,6 +66,9 @@ def build_event_from_data(event_data):
 
         # Add extracted attributes
         for attachment in attachments:
+            if attachment.typeURI is None:
+                event.typeURI = "https://json-schema.org/draft/2019-09/schema"
+
             event.add_attachment(attachment)
 
         for tag in tags:
@@ -77,7 +82,7 @@ def build_event_from_data(event_data):
 
         return event
     except ValueError as e:
-        LOG.critical(f"Could not create event: {e} | Data: %s", event_data)
+        LOG.critical(f"Could not create event: {e} | Data: %s", event_data_raw)
         return False
 
 
@@ -173,11 +178,11 @@ class CADFBuilderEnv:
             events = self.build_events(context, method, args, result)
 
             for event in events:
-                LOG.debug("Saving event %s", event.id)
-
                 if not event:
                     LOG.warning("Discarded one invalid RPC-Audit event!")
                 else:
+                    LOG.debug("Saving event %s", event.id)
+
                     with open("/tmp/rpc_events.txt", "a") as event_file:
                         event_file.write(event.as_dict())
                         event_file.write('\n')
