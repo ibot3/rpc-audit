@@ -44,7 +44,7 @@ def merge(source, destination):
     """
 
     if type(source) == list and (destination is None or type(destination) == list):
-        return source + destination, []
+        return source + (destination or [])
     elif type(source) == dict:
         for key, value in source.items():
             if isinstance(value, dict):
