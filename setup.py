@@ -4,7 +4,7 @@ import setuptools
 #    long_description = fh.read()
 
 setuptools.setup(
-    name="rpc-audit-os",
+    name="rpc_audit_os",
     version="0.0.1",
     author="Jakob Mueller",
     author_email="jakob.mueller@agdsn.de",

@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 from typing import Dict
+import datetime
 
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS
@@ -9,7 +10,7 @@ from pycadf.identifier import generate_uuid
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s:%(name)s:%(levelname)s:%(message)s', handlers=[
-    logging.FileHandler("/tmp/rpc-audit.log"),
+    logging.FileHandler("/tmp/rpc-audit-{}.log".format(datetime.date.isoformat())),
     logging.StreamHandler()
 ])
 
