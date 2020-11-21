@@ -90,13 +90,16 @@ class CADFBuilderEnv:
         return wrap
 
     def build_events(self, context, method, args, result=None):
-        LOG.debug("Building events")
+        LOG.debug("Building events, map: %s", self.builder_map)
+
         events = []
         event_data = {}
 
         for attr, builders in self.builder_map.items():
             for builder in builders:
                 data = builder(context, method, args, result)
+
+                LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, data)
 
                 if attr not in event_data or builder.builder_type == BuilderType.replace:
                     event_data[attr] = data
@@ -105,6 +108,8 @@ class CADFBuilderEnv:
                         event_data[attr] = data
                     else:
                         event_data[attr] = merge_dict(data, event_data[attr])
+
+        LOG.debug("Event data: %s", event_data)
 
         if type(event_data['target']) == list:
             targets = iter(event_data['target'])
