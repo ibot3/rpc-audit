@@ -50,7 +50,7 @@ def build_initiator(context, method, args, result=None):
     name = context['ctxt'].user_name
     domain = context['ctxt'].user_domain
     credential = Credential(context['ctxt'].auth_token,
-                            {'user_identity': context['ctxt'].user_identify,
+                            {'user_identity': context['ctxt'].user_identity,
                              'is_admin': context['ctxt'].is_admin,
                              'is_admin_project': context['ctxt'].is_admin_project,
                              'roles': context['ctxt'].roles})
