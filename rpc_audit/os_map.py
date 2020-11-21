@@ -1,6 +1,6 @@
 
 rpc_method_to_cadf_action = {
-    'conductor': {
+    'compute': {
         'add_aggregate_host': 'configure',
         'add_fixed_ip_to_instance': 'configure',
         'attach_interface': 'configure',
@@ -74,5 +74,21 @@ rpc_method_to_cadf_action = {
         'unquiesce_instance': 'update',
         'refresh_instance_security_rules': 'update',
         'trigger_crash_dump': 'update',
+    },
+    'scheduler': {
+        'select_destinations': 'read',
+        'update_aggregates': 'update',
+        'delete_aggregate': 'delete',
+        'update_instance_info': 'update',
+        'delete_instance_info': 'delete',
+        'sync_instance_info': 'configure',
+    },
+    'conductor': {
+        'live_migrate_instance': 'start',
+        'migrate_server': 'deploy',
+        'build_instances': 'deploy',
+        'schedule_and_build_instances': 'deploy',
+        'unshelve_instance': 'start',
+        'rebuild_instance': 'deploy',
     }
 }
