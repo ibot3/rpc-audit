@@ -94,7 +94,7 @@ def build_target(context, method, args, result=None):
 @builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE)
 def build_attachments(context, method, args, result=None):
     attachments = [Attachment(name='project', content={
-        'id': context['ctxt'].project,
+        'id': context['ctxt'].project_id,
         'name': context['ctxt'].project_name,
         'domain': context['ctxt'].project_domain
     }), Attachment(name='request_hash', content={
