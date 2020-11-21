@@ -3,9 +3,10 @@ import logging
 from enum import Enum
 from typing import Dict, List
 
-from pycadf.attachment import ATTACHMENT_KEYNAME_TYPEURI
+from oslo_serialization import jsonutils
+from pycadf.attachment import ATTACHMENT_KEYNAME_TYPEURI, Attachment
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
-from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS
+from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS, EVENT_KEYNAME_ATTACHMENTS
 from pycadf.identifier import generate_uuid
 
 
@@ -37,12 +38,14 @@ class Builder:
         return self.func(*args, **kwargs)
 
 
+# Merges two dicts with lists. "source" has priority, if not mergable
 def merge_dict(source, destination):
     for key, value in source.items():
         if isinstance(value, dict):
-            # get node or create one
             node = destination.setdefault(key, {})
             merge_dict(value, node)
+        elif isinstance(value, list) and isinstance(destination.get(key), list):
+            destination[key] = value + destination[key]
         else:
             destination[key] = value
     return destination
@@ -98,8 +101,14 @@ class CADFBuilderEnv:
         def build_tags(*args, **kwargs):
             return ['rpc']
 
+        def build_attachments(context, method, args, result):
+            args_json = jsonutils.to_primitive(args, convert_instances=True)
+
+            return [Attachment(typeURI="python/dict", content='{}({})'.format(method, args_json), name="rpc_method")]
+
         self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)
         self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
+        self.register_builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE, build_attachments)
 
     def register_builder(self, attr: str, builder_type: BuilderType, func):
         LOG.debug("Registered builder: %s", attr)

@@ -92,7 +92,7 @@ def build_target(context, method, args, result=None):
     return targets
 
 
-@builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE)
+@builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.APPEND)
 def build_attachments(context, method, args, result=None):
     args_json = jsonutils.to_primitive(args, convert_instances=True)
 
