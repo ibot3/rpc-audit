@@ -82,7 +82,7 @@ def build_event_from_data(event_data):
 
         return event
     except ValueError as e:
-        LOG.critical(f"Could not create event: {e} | Data: %s", event_data_raw)
+        LOG.error(f"Could not create event: {e} | Data: %s", event_data_raw, exc_info=True)
         return False
 
 
