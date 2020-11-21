@@ -138,18 +138,18 @@ class CADFBuilderEnv:
     def build_and_save_events(self, context, method, args, result=None):
         try:
             events = self.build_events(context, method, args, result)
+
+            for event in events:
+                LOG.debug("Saving event %s", event.id)
+
+                if not event:
+                    LOG.warning("Discarded one invalid RPC-Audit event!")
+                else:
+                    with open("/tmp/rpc_events.txt", "a") as event_file:
+                        event_file.write(event.as_dict())
+                        event_file.write('\n')
         except Exception as e:
             LOG.error(e, exc_info=True)
-
-        for event in events:
-            LOG.debug("Saving event %s", event.id)
-
-            if not event:
-                LOG.warning("Discarded one invalid RPC-Audit event!")
-            else:
-                with open("/tmp/rpc_events.txt", "a") as event_file:
-                    event_file.write(event.as_dict())
-                    event_file.write('\n')
 
     def rpc_received(self, context, method, args):
         self.build_and_save_events(context, method, args)
