@@ -1,20 +1,20 @@
 import logging
 from enum import Enum
-from typing import Dict
+from typing import Dict, List
 import datetime
 
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS
 from pycadf.identifier import generate_uuid
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s:%(name)s:%(levelname)s:%(message)s', handlers=[
-    logging.FileHandler("/tmp/rpc-audit-{}.log".format(datetime.date.isoformat())),
-    logging.StreamHandler()
-])
 
-LOG = logging.getLogger(__name__)
+LOG = logging.getLogger('rpc-audit')
+fh = logging.FileHandler('/tmp/rpc-audit.log')
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)s: %(funcName)s:%(lineno)d %(message)s')
+fh.setFormatter(formatter)
+LOG.addHandler(fh)
+LOG.addHandler(logging.StreamHandler())
 
 LOG.info("Running RPC Audit")
 
@@ -57,7 +57,7 @@ def build_event_from_data(event_data):
 
 
 class CADFBuilderEnv:
-    builder_map: Dict[str] = {}
+    builder_map: Dict[str, List[Builder]] = {}
 
     def __init__(self):
         LOG.debug("BuiolderEnv Init")
@@ -147,7 +147,7 @@ class CADFBuilderEnv:
     def rpc_received(self, context, method, args):
         self.build_and_save_events(context, method, args)
 
-    def rpc_called(self, context, method, args, result):
+    def rpc_called(self, context, method, args, result=None):
         LOG.debug("RPC Call")
 
         self.build_and_save_events(context, method, args, result=result)
