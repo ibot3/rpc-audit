@@ -83,11 +83,10 @@ class CADFBuilderEnv:
         self.builder_map[attr].append(Builder(builder_type, func))
 
     def builder(self, attr: str, builder_type: BuilderType):
-        def wrap(f):
-            def wrapped_f(*args):
-                self.register_builder(attr, builder_type, f)
-            return wrapped_f
-        return wrap
+        def decorator(f):
+            self.register_builder(attr, builder_type, f)
+
+        return decorator
 
     def build_events(self, context, method, args, result=None):
         LOG.debug("Building events, map: %s", self.builder_map)
