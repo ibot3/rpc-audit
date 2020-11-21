@@ -153,7 +153,7 @@ class CADFBuilderEnv:
                 if attr not in event_data or builder.builder_type == BuilderType.REPLACE:
                     event_data[attr] = data
                 elif builder.builder_type == BuilderType.APPEND:
-                    if attr not in event_data or type(event_data[attr]) != dict:
+                    if attr not in event_data or type(event_data[attr]) not in (dict, list):
                         event_data[attr] = data
                     else:
                         event_data[attr] = merge_dict(data, event_data[attr])
