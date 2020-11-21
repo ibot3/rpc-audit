@@ -2,7 +2,6 @@ import logging
 from enum import Enum
 from typing import Dict
 
-from pycadf.attachment import Attachment
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_ID, EVENT_KEYNAME_TAGS
 from pycadf.identifier import generate_uuid
