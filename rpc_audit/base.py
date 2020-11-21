@@ -131,7 +131,7 @@ class CADFBuilderEnv:
             for builder in builders:
                 data = builder(context, method, args, result)
 
-                debug_data = data.__dict__ if getattr(data, "to_dict", None) else data
+                debug_data = data.to_dict() if getattr(data, "to_dict", None) else data
                 LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, debug_data)
 
                 if attr not in event_data or builder.builder_type == BuilderType.replace:
