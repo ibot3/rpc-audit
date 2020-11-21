@@ -3,15 +3,19 @@ from enum import Enum
 from typing import Dict
 
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
-from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_ID, EVENT_KEYNAME_TAGS
+from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS
 from pycadf.identifier import generate_uuid
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s:%(name)s:%(levelname)s:%(message)s', handlers=[
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s:%(name)s:%(levelname)s:%(message)s', handlers=[
     logging.FileHandler("/tmp/rpc-audit.log"),
     logging.StreamHandler()
 ])
 
 LOG = logging.getLogger(__name__)
+
+LOG.info("Running RPC Audit")
 
 
 class BuilderType(Enum):
@@ -55,6 +59,8 @@ class CADFBuilderEnv:
     builder_map: Dict[str] = {}
 
     def __init__(self):
+        LOG.debug("BuiolderEnv Init")
+
         self.register_builder(EVENT_KEYNAME_EVENTTYPE,
                               BuilderType.REPLACE,
                               lambda: EVENTTYPE_ACTIVITY)
@@ -63,7 +69,11 @@ class CADFBuilderEnv:
                               BuilderType.REPLACE,
                               lambda: ['rpc'])
 
+        LOG.debug("BuiolderEnv Init Finished")
+
     def register_builder(self, attr: str, builder_type: BuilderType, func):
+        LOG.debug("Registered builder: %s", attr)
+
         if attr not in EVENT_KEYNAMES:
             raise ValueError("Unknown CADF attribute")
 
@@ -80,6 +90,7 @@ class CADFBuilderEnv:
         return wrap
 
     def build_events(self, context, method, args, result=None):
+        LOG.debug("Building events")
         events = []
         event_data = {}
 
@@ -123,6 +134,8 @@ class CADFBuilderEnv:
         events = self.build_events(context, method, args, result)
 
         for event in events:
+            LOG.debug("Saving event %s", event.id)
+
             if not event:
                 LOG.warning("Discarded one invalid RPC-Audit event!")
             else:
@@ -134,4 +147,6 @@ class CADFBuilderEnv:
         self.build_and_save_events(context, method, args)
 
     def rpc_called(self, context, method, args, result):
+        LOG.debug("RPC Call")
+
         self.build_and_save_events(context, method, args, result=result)
