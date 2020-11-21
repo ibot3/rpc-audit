@@ -38,14 +38,16 @@ class Builder:
         return self.func(*args, **kwargs)
 
 
-# Merges two dicts with lists. "source" has priority, if not mergable
 def merge_dict(source, destination):
+    """
+    Merges two dicts with lists. "source" has priority, if not mergable
+    """
     for key, value in source.items():
         if isinstance(value, dict):
             node = destination.setdefault(key, {})
             merge_dict(value, node)
-        elif isinstance(value, list) and isinstance(destination.get(key), list):
-            destination[key] = value + destination[key]
+        elif isinstance(value, list) and isinstance(destination.get(key, []), list):
+            destination[key] = value + destination.get(key, [])
         else:
             destination[key] = value
     return destination
@@ -108,7 +110,7 @@ class CADFBuilderEnv:
 
         self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)
         self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
-        self.register_builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE, build_attachments)
+        self.register_builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.APPEND, build_attachments)
 
     def register_builder(self, attr: str, builder_type: BuilderType, func):
         LOG.debug("Registered builder: %s", attr)
