@@ -45,7 +45,7 @@ def build_outcome(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
 def build_initiator(context, method, args, result=None):
-    LOG.debug("context[ctx]: %s", context['ctx'].__dict__)
+    LOG.debug("context[ctx]: %s", context['ctxt'].__dict__)
 
     id = context['ctxt'].user
     type_uri = ACCOUNT_USER
