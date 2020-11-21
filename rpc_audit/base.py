@@ -89,6 +89,14 @@ class CADFBuilderEnv:
 
     def build_events(self, context, method, args, result=None):
         LOG.debug("Building events, map: %s", self.builder_map)
+        LOG.debug("Building events, method: %s %s", method, args)
+        LOG.debug("Building events, result: %s", result)
+
+        for key, value in context.items():
+            if callable(getattr(value, "__dict__", None)):
+                value = value.__dict__()
+
+            LOG.debug("Building events, context[%s]: %s", key, value)
 
         events = []
         event_data = {}
