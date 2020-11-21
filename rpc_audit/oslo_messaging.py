@@ -1,6 +1,7 @@
 import json
 from hashlib import sha256
 
+from oslo_serialization import jsonutils
 from pycadf.attachment import Attachment
 from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER
 from pycadf.credential import Credential
@@ -93,13 +94,15 @@ def build_target(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.REPLACE)
 def build_attachments(context, method, args, result=None):
+    args_json = jsonutils.to_primitive(args, convert_instances=True)
+
     attachments = [Attachment(name='project', content={
         'id': context['ctxt'].project_id,
         'name': context['ctxt'].project_name,
         'domain': context['ctxt'].project_domain
     }), Attachment(name='request_hash', content={
         'algorithm': 'SHA256',
-        'hash': sha256('{}_{}'.format(method, json.dumps(args)).encode('utf-8')).hexdigest()
+        'hash': sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest()
     }), Attachment(name='credential_info', content={
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,
