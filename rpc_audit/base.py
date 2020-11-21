@@ -67,7 +67,7 @@ def build_event_from_data(event_data):
         # Add extracted attributes
         for attachment in attachments:
             if attachment.typeURI is None:
-                event.typeURI = "https://json-schema.org/draft/2019-09/schema"
+                attachment.typeURI = "https://json-schema.org/draft/2019-09/schema"
 
             event.add_attachment(attachment)
 
