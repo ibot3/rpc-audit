@@ -89,13 +89,13 @@ class CADFBuilderEnv:
             for builder in builders:
                 data = builder(context, method, args, result)
 
-                if attr.name not in event_data or builder.builder_type == BuilderType.replace:
-                    event_data[attr.name] = data
+                if attr not in event_data or builder.builder_type == BuilderType.replace:
+                    event_data[attr] = data
                 elif builder.builder_type == BuilderType.append:
-                    if attr.name not in event_data or type(event_data[attr.name]) != dict:
-                        event_data[attr.name] = data
+                    if attr not in event_data or type(event_data[attr]) != dict:
+                        event_data[attr] = data
                     else:
-                        event_data[attr.name] = merge_dict(data, event_data[attr.name])
+                        event_data[attr] = merge_dict(data, event_data[attr])
 
         if type(event_data['target']) == list:
             targets = iter(event_data['target'])
