@@ -184,7 +184,7 @@ class CADFBuilderEnv:
                     LOG.debug("Saving event %s", event.id)
 
                     with open("/tmp/rpc_events.txt", "a") as event_file:
-                        event_file.write(event.as_dict())
+                        event_file.write(json.dumps(event.as_dict()))
                         event_file.write('\n')
         except Exception as e:
             LOG.error(e, exc_info=True)
