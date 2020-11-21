@@ -23,7 +23,11 @@ builder = CADFBuilderEnv()
 def build_action(context, method, args, result=None):
     topic = context['rpc_client'].target.topic
 
+    LOG.debug("topic: %s", topic)
+
     submap = rpc_method_to_cadf_action.get(topic)
+
+    LOG.debug("submap: %s", submap)
 
     if submap is not None:
         action = submap.get(method)
@@ -52,8 +56,7 @@ def build_initiator(context, method, args, result=None):
     name = context['ctxt'].user_name
     domain = context['ctxt'].user_domain
     credential = Credential(context['ctxt'].auth_token,
-                            {'user_identity': context['ctxt'].user_identity,
-                             'is_admin': context['ctxt'].is_admin,
+                            {'is_admin': context['ctxt'].is_admin,
                              'is_admin_project': context['ctxt'].is_admin_project,
                              'roles': context['ctxt'].roles})
     host = Host(address=context['ctxt'].remote_address)
