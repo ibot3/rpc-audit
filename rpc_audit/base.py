@@ -48,7 +48,33 @@ def merge_dict(source, destination):
 
 def build_event_from_data(event_data):
     try:
+        # Extract some attributes, because the have extra methods and cannot be used in the Event constructor
+        attachments = event_data.get('attachments', [])
+        tags = event_data.get('tags', [])
+        measurements = event_data.get('measurements', [])
+        reportersteps = event_data.get('reportersteps', [])
+
+        event_data.pop('attachments', None)
+        event_data.pop('tags', None)
+        event_data.pop('measurements', None)
+        event_data.pop('reportersteps', None)
+
+        # Build event
         event = Event(**event_data)
+
+        # Add extracted attributes
+        for attachment in attachments:
+            event.add_attachment(attachment)
+
+        for tag in tags:
+            event.add_tag(tag)
+
+        for measurement in measurements:
+            event.add_measurement(measurement)
+
+        for reporterstep in reportersteps:
+            event.add_reporterstep(reporterstep)
+
         return event
     except ValueError as e:
         LOG.critical(f"Could not create event: {e} | Data: %s", event_data)
@@ -93,7 +119,7 @@ class CADFBuilderEnv:
         LOG.debug("Building events, result: %s", result)
 
         for key, value in context.items():
-            if callable(getattr(value, "__dict__", None)):
+            if callable(getattr(value, "to_dict", None)):
                 value = value.__dict__
 
             LOG.debug("Building events, context[%s]: %s", key, value)
@@ -105,7 +131,8 @@ class CADFBuilderEnv:
             for builder in builders:
                 data = builder(context, method, args, result)
 
-                LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, data)
+                debug_data = data.__dict__ if getattr(data, "to_dict", None) else data
+                LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, debug_data)
 
                 if attr not in event_data or builder.builder_type == BuilderType.replace:
                     event_data[attr] = data

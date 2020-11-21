@@ -1,6 +1,6 @@
 
 rpc_method_to_cadf_action = {
-    'compute': {
+    'conductor': {
         'add_aggregate_host': 'configure',
         'add_fixed_ip_to_instance': 'configure',
         'attach_interface': 'configure',
