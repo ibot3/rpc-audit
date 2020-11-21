@@ -68,13 +68,7 @@ def build_event_from_data(event_data):
 
         # Add extracted attributes
         for attachment in attachments:
-            # Automatically convert to json if no schema is defined
-            if attachment.typeURI is None:
-                attachment.typeURI = "https://json-schema.org/draft/2019-09/schema"
-                attachment.content = json.dumps(attachment.content)
-
             LOG.debug("ATTACHMENT: %s", attachment.as_dict())
-
             event.add_attachment(attachment)
 
         for tag in tags:

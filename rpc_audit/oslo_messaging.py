@@ -96,14 +96,14 @@ def build_target(context, method, args, result=None):
 def build_attachments(context, method, args, result=None):
     args_json = jsonutils.to_primitive(args, convert_instances=True)
 
-    attachments = [Attachment(name='project', content={
+    attachments = [Attachment(name='project', typeURI="python/dict", content={
         'id': context['ctxt'].project_id,
         'name': context['ctxt'].project_name,
         'domain': context['ctxt'].project_domain
-    }), Attachment(name='request_hash', content={
+    }), Attachment(name='request_hash', typeURI="python/dict", content={
         'algorithm': 'SHA256',
         'hash': str(sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest())
-    }), Attachment(name='credential_info', content={
+    }), Attachment(name='credential_info', typeURI="python/dict", content={
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,
         'roles': context['ctxt'].roles
