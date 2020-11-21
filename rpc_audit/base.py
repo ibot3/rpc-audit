@@ -8,7 +8,7 @@ from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_K
 from pycadf.identifier import generate_uuid
 
 
-LOG = logging.getLogger('rpc-audit')
+LOG = logging.getLogger('rpc_audit')
 fh = logging.FileHandler('/tmp/rpc-audit.log')
 fh.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s %(levelname)s: %(funcName)s:%(lineno)d %(message)s')
@@ -62,16 +62,6 @@ class CADFBuilderEnv:
     def __init__(self):
         LOG.debug("BuiolderEnv Init")
 
-        self.register_builder(EVENT_KEYNAME_EVENTTYPE,
-                              BuilderType.REPLACE,
-                              lambda: EVENTTYPE_ACTIVITY)
-
-        self.register_builder(EVENT_KEYNAME_TAGS,
-                              BuilderType.REPLACE,
-                              lambda: ['rpc'])
-
-        LOG.debug("BuiolderEnv Init Finished")
-
     def register_builder(self, attr: str, builder_type: BuilderType, func):
         LOG.debug("Registered builder: %s", attr)
 
@@ -95,7 +85,7 @@ class CADFBuilderEnv:
         events = []
         event_data = {}
 
-        for attr, builders in self.builder_map:
+        for attr, builders in self.builder_map.items():
             for builder in builders:
                 data = builder(context, method, args, result)
 
@@ -151,3 +141,11 @@ class CADFBuilderEnv:
         LOG.debug("RPC Call")
 
         self.build_and_save_events(context, method, args, result=result)
+
+    @builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE)
+    def build_event_type(self, *args, **kwargs):
+        return EVENTTYPE_ACTIVITY
+
+    @builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE)
+    def build_event_type(self, *args, **kwargs):
+        return ['rpc']
