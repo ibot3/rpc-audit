@@ -148,9 +148,9 @@ class CADFBuilderEnv:
                 debug_data = data.as_dict() if getattr(data, "as_dict", None) else data
                 LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, debug_data)
 
-                if attr not in event_data or builder.builder_type == BuilderType.replace:
+                if attr not in event_data or builder.builder_type == BuilderType.REPLACE:
                     event_data[attr] = data
-                elif builder.builder_type == BuilderType.append:
+                elif builder.builder_type == BuilderType.APPEND:
                     if attr not in event_data or type(event_data[attr]) != dict:
                         event_data[attr] = data
                     else:
