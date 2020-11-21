@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Dict, List
 
 from oslo_serialization import jsonutils
-from pycadf.attachment import ATTACHMENT_KEYNAME_TYPEURI, Attachment
+from pycadf.attachment import Attachment
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS, EVENT_KEYNAME_ATTACHMENTS
 from pycadf.identifier import generate_uuid

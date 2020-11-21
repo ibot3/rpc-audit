@@ -1,11 +1,9 @@
-import json
 from hashlib import sha256
 
 from oslo_serialization import jsonutils
 from pycadf.attachment import Attachment
 from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER
 from pycadf.credential import Credential
-from pycadf.endpoint import Endpoint
 from pycadf.event import EVENT_KEYNAME_ACTION, EVENT_KEYNAME_OUTCOME, EVENT_KEYNAME_INITIATOR, \
     EVENT_KEYNAME_ATTACHMENTS, EVENT_KEYNAME_TARGET
 from pycadf.host import Host
@@ -13,7 +11,7 @@ from pycadf.resource import Resource
 
 
 from .os_map import rpc_method_to_cadf_action
-from .base import CADFBuilderEnv, BuilderType, LOG
+from ..base import CADFBuilderEnv, BuilderType, LOG
 
 builder = CADFBuilderEnv()
 

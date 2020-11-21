@@ -28,7 +28,7 @@
    "global_request_id":"None",
    "resource_uuid":"None",
    "roles":[
-      "heat_stack_owner",
+      "heat_stack_owner",_project_id
       "admin",
       "member",
       "reader"
