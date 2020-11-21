@@ -2,6 +2,7 @@ import logging
 from enum import Enum
 from typing import Dict, List
 
+from pycadf.attachment import ATTACHMENT_KEYNAME_TYPEURI
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS
 from pycadf.identifier import generate_uuid
@@ -67,7 +68,9 @@ def build_event_from_data(event_data):
         # Add extracted attributes
         for attachment in attachments:
             if attachment.typeURI is None:
-                attachment.typeURI = "https://json-schema.org/draft/2019-09/schema"
+                setattr(attachment, ATTACHMENT_KEYNAME_TYPEURI, "https://json-schema.org/draft/2019-09/schema")
+
+            LOG.debug("ATTACHMENT: %s", attachment.as_dict())
 
             event.add_attachment(attachment)
 
@@ -124,8 +127,8 @@ class CADFBuilderEnv:
         LOG.debug("Building events, result: %s", result)
 
         for key, value in context.items():
-            if callable(getattr(value, "to_dict", None)):
-                value = value.__dict__
+            if callable(getattr(value, "as_dict", None)):
+                value = value.as_dict()
 
             LOG.debug("Building events, context[%s]: %s", key, value)
 
@@ -136,7 +139,7 @@ class CADFBuilderEnv:
             for builder in builders:
                 data = builder(context, method, args, result)
 
-                debug_data = data.to_dict() if getattr(data, "to_dict", None) else data
+                debug_data = data.as_dict() if getattr(data, "as_dict", None) else data
                 LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, debug_data)
 
                 if attr not in event_data or builder.builder_type == BuilderType.replace:
