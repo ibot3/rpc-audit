@@ -136,7 +136,10 @@ class CADFBuilderEnv:
         return events
 
     def build_and_save_events(self, context, method, args, result=None):
-        events = self.build_events(context, method, args, result)
+        try:
+            events = self.build_events(context, method, args, result)
+        except Exception as e:
+            LOG.error(e, exc_info=True)
 
         for event in events:
             LOG.debug("Saving event %s", event.id)
