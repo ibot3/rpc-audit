@@ -55,10 +55,7 @@ def build_initiator(context, method, args, result=None):
     type_uri = ACCOUNT_USER
     name = context['ctxt'].user_name
     domain = context['ctxt'].user_domain
-    credential = Credential(context['ctxt'].auth_token,
-                            {'is_admin': context['ctxt'].is_admin,
-                             'is_admin_project': context['ctxt'].is_admin_project,
-                             'roles': context['ctxt'].roles})
+    credential = Credential(context['ctxt'].auth_token)
     host = Host(address=context['ctxt'].remote_address)
 
     return Resource(id, type_uri, name, domain=domain, credential=credential,
@@ -103,6 +100,10 @@ def build_attachments(context, method, args, result=None):
     }), Attachment(name='request_hash', content={
         'algorithm': 'SHA256',
         'hash': sha256('{}_{}'.format(method, json.dumps(args)).encode('utf-8')).hexdigest()
+    }), Attachment(name='credential_info', content={
+        'is_admin': context['ctxt'].is_admin,
+        'is_admin_project': context['ctxt'].is_admin_project,
+        'roles': context['ctxt'].roles
     })]
 
     return attachments
