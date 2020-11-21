@@ -108,10 +108,12 @@ class CADFBuilderEnv:
         def build_tags(*args, **kwargs):
             return ['rpc']
 
-        def build_attachments(context, method, args, result):
-            args_json = jsonutils.to_primitive(args, convert_instances=True)
+        def build_attachments(context, method, args, result=None):
+            args_dict = jsonutils.to_primitive(args, convert_instances=True)
 
-            return [Attachment(typeURI="python/dict", content='{}({})'.format(method, args_json), name="rpc_method")]
+            return [Attachment(typeURI="python/dict",
+                               content={'method': method, 'args': args_dict},
+                               name="rpc_method")]
 
         self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)
         self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
