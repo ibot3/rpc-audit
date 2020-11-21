@@ -62,6 +62,15 @@ class CADFBuilderEnv:
     def __init__(self):
         LOG.debug("BuiolderEnv Init")
 
+        def build_event_type(self, *args, **kwargs):
+            return EVENTTYPE_ACTIVITY
+
+        def build_tags(self, *args, **kwargs):
+            return ['rpc']
+
+        self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)
+        self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
+
     def register_builder(self, attr: str, builder_type: BuilderType, func):
         LOG.debug("Registered builder: %s", attr)
 
@@ -141,11 +150,3 @@ class CADFBuilderEnv:
         LOG.debug("RPC Call")
 
         self.build_and_save_events(context, method, args, result=result)
-
-    @builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE)
-    def build_event_type(self, *args, **kwargs):
-        return EVENTTYPE_ACTIVITY
-
-    @builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE)
-    def build_event_type(self, *args, **kwargs):
-        return ['rpc']
