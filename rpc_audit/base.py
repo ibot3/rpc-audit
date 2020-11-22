@@ -113,7 +113,10 @@ class CADFBuilderEnv:
 
             return [Attachment(typeURI="python/dict",
                                content={'method': method, 'args': args_dict},
-                               name="rpc_method")]
+                               name="rpc_method"),
+                    Attachment(typeURI="any",
+                               content=result,
+                               name="result")]
 
         self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)
         self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
