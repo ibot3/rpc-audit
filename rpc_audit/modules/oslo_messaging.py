@@ -20,7 +20,7 @@ builder = CADFBuilderEnv()
 
 @builder.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
 def build_action(context, method, args, result=None):
-    topic = context['target'].target.topic
+    topic = context['target'].topic
 
     LOG.debug("topic: %s", topic)
 
