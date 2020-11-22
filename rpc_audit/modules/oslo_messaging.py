@@ -15,7 +15,7 @@ from ..base import CADFBuilderEnv, BuilderType, LOG
 
 builder = CADFBuilderEnv()
 
-# context:  {'target': ..., 'ctxt': ...}
+# context:  {'target': ..., 'ctxt': ..., 'remote_address': ...}
 
 
 @builder.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
@@ -55,7 +55,9 @@ def build_initiator(context, method, args, result=None):
     name = context['ctxt'].user_name
     domain = context['ctxt'].user_domain
     credential = Credential(context['ctxt'].auth_token)
-    host = Host(address=context['ctxt'].remote_address)
+
+    remote_addr = getattr(context['ctxt'], 'remote_address', context.get('remote_address', None))
+    host = Host(address=remote_addr)
 
     return Resource(id, type_uri, name, domain=domain, credential=credential,
                     host=host)
