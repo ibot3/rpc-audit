@@ -207,8 +207,8 @@ class CADFBuilderEnv:
         except Exception as e:
             LOG.error(e, exc_info=True)
 
-    def rpc_received(self, context, method, args):
-        self.build_and_save_events(context, method, args)
+    def rpc_received(self, context, method, args, result=None):
+        self.build_and_save_events(context, method, args, result)
 
     def rpc_called(self, context, method, args, result=None):
         LOG.debug("RPC Call")
