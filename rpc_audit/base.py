@@ -9,7 +9,6 @@ from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS, EVENT_KEYNAME_ATTACHMENTS
 from pycadf.identifier import generate_uuid
 
-
 LOG = logging.getLogger('rpc_audit')
 fh = logging.FileHandler('/tmp/rpc-audit.log')
 fh.setLevel(logging.DEBUG)
@@ -111,12 +110,16 @@ class CADFBuilderEnv:
         def build_attachments(context, method, args, result=None):
             args_dict = jsonutils.to_primitive(args, convert_instances=True)
 
-            return [Attachment(typeURI="python/dict",
-                               content={'method': method, 'args': args_dict},
-                               name="rpc_method"),
-                    Attachment(typeURI="any",
-                               content=result,
-                               name="result")]
+            attachments = [Attachment(typeURI="python/dict",
+                                      content={'method': method, 'args': args_dict},
+                                      name="rpc_method")]
+
+            if result:
+                attachments.append(Attachment(typeURI="any",
+                                              content=result,
+                                              name="result"))
+
+            return attachments
 
         self.register_builder(EVENT_KEYNAME_EVENTTYPE, BuilderType.REPLACE, build_event_type)
         self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
