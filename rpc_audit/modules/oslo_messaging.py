@@ -15,12 +15,12 @@ from ..base import CADFBuilderEnv, BuilderType, LOG
 
 builder = CADFBuilderEnv()
 
-# context:  {'rpc_client': ..., 'ctxt': ...}
+# context:  {'target': ..., 'ctxt': ...}
 
 
 @builder.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
 def build_action(context, method, args, result=None):
-    topic = context['rpc_client'].target.topic
+    topic = context['target'].target.topic
 
     LOG.debug("topic: %s", topic)
 
