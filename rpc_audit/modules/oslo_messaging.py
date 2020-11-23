@@ -15,11 +15,16 @@ from ..base import CADFBuilderEnv, BuilderType, LOG
 
 builder = CADFBuilderEnv()
 
-# context:  {'target': ..., 'ctxt': ..., 'remote_address': ...}
+# context:  {'target': ..., 'ctxt': ...}
 
 
 @builder.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
 def build_action(context, method, args, result=None):
+    """
+    Tries to find an fitting action for the method.
+    To achieve this, the topic of the MQ is used to lookup the action in a map.
+    """
+
     topic = context['target'].topic
 
     LOG.debug("topic: %s", topic)
@@ -39,6 +44,10 @@ def build_action(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_OUTCOME, BuilderType.REPLACE)
 def build_outcome(context, method, args, result=None):
+    """
+    Checks if the result is not None and then returns "success".
+    If the result is None, "unknown" will be returned.
+    """
     if result is None:
         return UNKNOWN
     else:
@@ -48,16 +57,17 @@ def build_outcome(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
 def build_initiator(context, method, args, result=None):
-    LOG.debug("context[ctx]: %s", context['ctxt'].__dict__)
+    """
+    Builds the initiator from the available context information.
+    :return:
+    """
 
     id = context['ctxt'].user
     type_uri = ACCOUNT_USER
     name = context['ctxt'].user_name
     domain = context['ctxt'].user_domain
     credential = Credential(context['ctxt'].auth_token)
-
-    remote_addr = getattr(context['ctxt'], 'remote_address', context.get('remote_address', None))
-    host = Host(address=remote_addr)
+    host = Host(address=context['ctxt'].remote_address)
 
     return Resource(id, type_uri, name, domain=domain, credential=credential,
                     host=host)
@@ -65,6 +75,11 @@ def build_initiator(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_TARGET, BuilderType.REPLACE)
 def build_target(context, method, args, result=None):
+    """
+    Builds the targets from the arguments.
+    Returns a list of targets, if multiple targets are given.
+    """
+
     targets = []
 
     if args.get('instance') is not None or args.get('instances') is not None:
@@ -94,6 +109,13 @@ def build_target(context, method, args, result=None):
 
 @builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.APPEND)
 def build_attachments(context, method, args, result=None):
+    """
+    Builds the following attachments:
+    - Information about the project
+    - A hash of the method and arguments
+    - Information about the permissions of the initiator
+    """
+
     args_json = jsonutils.to_primitive(args, convert_instances=True)
 
     attachments = [Attachment(name='project', typeURI="python/dict", content={
@@ -103,7 +125,7 @@ def build_attachments(context, method, args, result=None):
     }), Attachment(name='request_hash', typeURI="python/dict", content={
         'algorithm': 'SHA256',
         'hash': str(sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest())
-    }), Attachment(name='credential_info', typeURI="python/dict", content={
+    }), Attachment(name='permissions', typeURI="python/dict", content={
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,
         'roles': context['ctxt'].roles

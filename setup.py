@@ -4,11 +4,11 @@ import setuptools
 #    long_description = fh.read()
 
 setuptools.setup(
-    name="rpc_audit_os",
+    name="rpc_audit",
     version="0.0.1",
     author="Jakob Mueller",
     author_email="jakob.mueller@agdsn.de",
-    description="A small example package",
+    description="",
     long_description='',
     long_description_content_type="text/markdown",
     url="https://publicgitlab.cloudandheat.com/cloud-kritis/rpc-audit",
