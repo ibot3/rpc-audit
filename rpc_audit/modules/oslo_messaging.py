@@ -19,7 +19,7 @@ builder = CADFBuilderEnv()
 
 
 @builder.builder(EVENT_KEYNAME_ACTION, BuilderType.REPLACE)
-def build_action(context, method, args, result=None):
+def build_action(context, method, args, role, result=None):
     """
     Tries to find an fitting action for the method.
     To achieve this, the topic of the MQ is used to lookup the action in a map.
@@ -43,7 +43,7 @@ def build_action(context, method, args, result=None):
 
 
 @builder.builder(EVENT_KEYNAME_OUTCOME, BuilderType.REPLACE)
-def build_outcome(context, method, args, result=None):
+def build_outcome(context, method, args, role, result=None):
     """
     Checks if the result is not None and then returns "success".
     If the result is None, "unknown" will be returned.
@@ -56,7 +56,7 @@ def build_outcome(context, method, args, result=None):
 
 
 @builder.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
-def build_initiator(context, method, args, result=None):
+def build_initiator(context, method, args, role, result=None):
     """
     Builds the initiator from the available context information.
     :return:
@@ -74,7 +74,7 @@ def build_initiator(context, method, args, result=None):
 
 
 @builder.builder(EVENT_KEYNAME_TARGET, BuilderType.REPLACE)
-def build_target(context, method, args, result=None):
+def build_target(context, method, args, role, result=None):
     """
     Builds the targets from the arguments.
     Returns a list of targets, if multiple targets are given.
@@ -108,7 +108,7 @@ def build_target(context, method, args, result=None):
 
 
 @builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.APPEND)
-def build_attachments(context, method, args, result=None):
+def build_attachments(context, method, args, role, result=None):
     """
     Builds the following attachments:
     - Information about the project

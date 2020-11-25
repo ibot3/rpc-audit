@@ -141,7 +141,7 @@ class CADFBuilderEnv:
             """
             return ['rpc']
 
-        def build_attachments(context, method, args, result=None):
+        def build_attachments(context, method, args, role, result=None):
             """
             Default builder for attachments. Add the following attachments:
             - The called RPC method and parameters.
@@ -151,7 +151,7 @@ class CADFBuilderEnv:
             args_dict = jsonutils.to_primitive(args, convert_instances=True)
 
             attachments = [Attachment(typeURI="python/dict",
-                                      content={'method': method, 'args': args_dict},
+                                      content={'method': method, 'role': role.name, 'args': args_dict},
                                       name="rpc_method")]
 
             if result:
@@ -194,7 +194,8 @@ class CADFBuilderEnv:
 
         return decorator
 
-    def build_events(self, context: Any, method: str, args: Optional[Dict[str, Any]], result: Any = None) -> List[Event]:
+    def build_events(self, context: Any, method: str, args: Optional[Dict[str, Any]], role: ObserverRole,
+                     result: Any = None) -> List[Event]:
         """
         Executes all builders and aggregates the data into Event objects.
 
@@ -204,6 +205,7 @@ class CADFBuilderEnv:
         :param context: Environment specific metadata.
         :param method: The name of the called method
         :param args: The parameters for the called method
+        :param role: The role of the observing service (client/server)
         :param result: The returned result after executing the method
         :return:
         """
@@ -226,7 +228,7 @@ class CADFBuilderEnv:
             # Iterate above all builders for that attribute.
             for builder in builders:
                 # Execute the builder
-                data = builder(context, method, args, result)
+                data = builder(context, method, args, role, result)
 
                 debug_data = data.as_dict() if getattr(data, "as_dict", None) else data
                 LOG.debug("Executed builder %s, mode: %s, result: %s", attr, builder.builder_type, debug_data)
@@ -294,23 +296,23 @@ class CADFBuilderEnv:
 
         return
 
-    def process_async(self, context, method: str, args: Optional[Dict], result=None):
+    def process_async(self, context, method: str, args: Optional[Dict], role: ObserverRole, result=None, ):
         """
         Starts the event generation in a new thread.
         """
 
-        start_new_thread(self.build_and_save_events, (context, method, args, result))
+        start_new_thread(self.build_and_save_events, (context, method, args, role, result))
 
     def rpc_received(self, context, method: str, args: Optional[Dict], result=None):
         """
         Should be called when an rpc call has been received.
         """
 
-        self.process_async(context, method, args, result)
+        self.process_async(context, method, args, ObserverRole.RECEIVER, result)
 
     def rpc_called(self, context, method: str, args: Optional[Dict], result=None):
         """
         Should be called when an rpc call has been sent.
         """
 
-        self.process_async(context, method, args, result)
+        self.process_async(context, method, args, ObserverRole.SENDER, result)
