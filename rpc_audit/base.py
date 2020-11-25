@@ -313,14 +313,14 @@ class CADFBuilderEnv:
 
         return events
 
-    def build_and_save_events(self, context, method, args, result=None):
+    def build_and_save_events(self, context, method, args, role: ObserverRole, result=None):
         """
         Generates events and saves them to a persistent storage afterwards.
 
         Will catch all errors and log them.
         """
         try:
-            events = self.build_events(context, method, args, result)
+            events = self.build_events(context, method, args, role, result)
 
             for event in events:
                 if event is None:
