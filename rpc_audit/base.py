@@ -4,6 +4,7 @@ from _thread import start_new_thread
 from enum import Enum
 from typing import Dict, List, Optional, Any
 
+from oslo_messaging.notify._impl_https import HttpsDriver
 from oslo_serialization import jsonutils
 from pycadf.attachment import Attachment
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
@@ -20,6 +21,11 @@ LOG.addHandler(fh)
 LOG.addHandler(logging.StreamHandler())
 
 LOG.info("Running RPC Audit")
+
+
+class ObserverRole(Enum):
+    SENDER = 1
+    RECEIVER = 2
 
 
 class BuilderType(Enum):
@@ -131,6 +137,15 @@ def build_event_from_data(event_data: dict) -> Optional[Event]:
     except ValueError as e:
         LOG.error(f"Could not create event: {e} | Data: %s", event_data_raw, exc_info=True)
         return None
+
+
+def send_to_audit_api(event: Event):
+    """
+    Send an event to the audit API via http.
+    """
+
+    api_client = HttpsDriver(None, None, None)
+    api_client.notify(None, event.as_dict(), "None", 1)
 
 
 class CADFBuilderEnv:
@@ -312,6 +327,8 @@ class CADFBuilderEnv:
                     LOG.warning("Discarded one invalid RPC-Audit event!")
                 else:
                     LOG.debug("Saving event %s", event.id)
+
+                    send_to_audit_api(event)
 
                     with open("/tmp/rpc_events.txt", "a") as event_file:
                         event_file.write(json.dumps(event.as_dict()))

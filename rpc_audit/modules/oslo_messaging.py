@@ -5,7 +5,7 @@ from pycadf.attachment import Attachment
 from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER
 from pycadf.credential import Credential
 from pycadf.event import EVENT_KEYNAME_ACTION, EVENT_KEYNAME_OUTCOME, EVENT_KEYNAME_INITIATOR, \
-    EVENT_KEYNAME_ATTACHMENTS, EVENT_KEYNAME_TARGET
+    EVENT_KEYNAME_ATTACHMENTS, EVENT_KEYNAME_TARGET, EVENT_KEYNAME_OBSERVER
 from pycadf.host import Host
 from pycadf.resource import Resource
 
@@ -107,6 +107,14 @@ def build_target(context, method, args, role, result=None):
     return targets
 
 
+@builder.builder(EVENT_KEYNAME_OBSERVER, BuilderType.REPLACE)
+def build_observer(context, method, args, role, result=None):
+    id = 'topic/{}'.format(context['target'].topic)
+    type_uri = 'service'
+
+    return Resource(id, type_uri)
+
+
 @builder.builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.APPEND)
 def build_attachments(context, method, args, role, result=None):
     """
@@ -129,7 +137,7 @@ def build_attachments(context, method, args, role, result=None):
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,
         'roles': context['ctxt'].roles
-    })]
+    }), Attachment(name="request_id", typeURI="pythom/str", content=context['ctxt'].request_id)]
 
     return attachments
 
