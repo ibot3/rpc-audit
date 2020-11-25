@@ -67,6 +67,24 @@ def merge(source, destination):
     return destination
 
 
+def prune_dict(dct, mask):
+    """
+    Removes all keys from a dict that are not contained in the mask
+
+    Source: https://stackoverflow.com/q/46311253/6644547
+    """
+
+    result = {}
+    for k, v in mask.items():
+        if isinstance(v, dict):
+            value = prune_dict(dct[k], v)
+            if value: # check that dict is non-empty
+                result[k] = value
+        elif v:
+            result[k] = dct[k]
+    return result
+
+
 def build_event_from_data(event_data: dict) -> Optional[Event]:
     """
     Builds a CADF Event Object.
@@ -126,6 +144,9 @@ class CADFBuilderEnv:
     # This map contains all registered builders.
     builder_map: Dict[str, List[Builder]] = {}
 
+    # This map filters, which RPC method parameters should be added to the event
+    filter_args: Optional[Dict[str, Dict]] = None
+
     def __init__(self):
         LOG.debug("BuilderEnv Init")
 
@@ -149,6 +170,10 @@ class CADFBuilderEnv:
             """
 
             args_dict = jsonutils.to_primitive(args, convert_instances=True)
+
+            if self.filter_args is not None:
+                mask = self.filter_args.get(method, {})
+                args_dict = prune_dict(args_dict, mask)
 
             attachments = [Attachment(typeURI="python/dict",
                                       content={'method': method, 'role': role.name, 'args': args_dict},

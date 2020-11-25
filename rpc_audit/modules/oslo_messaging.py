@@ -132,3 +132,12 @@ def build_attachments(context, method, args, role, result=None):
     })]
 
     return attachments
+
+
+builder.filter_args = {
+    'reboot_instance': {
+        'instance': {
+            'uuid': True
+        }
+    }
+}
