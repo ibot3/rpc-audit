@@ -144,8 +144,11 @@ def send_to_audit_api(event: Event):
     Send an event to the audit API via http.
     """
 
-    api_client = HttpsDriver(None, None, None)
-    api_client.notify(None, event.as_dict(), "None", 1)
+    try:
+        api_client = HttpsDriver(None, None, None)
+        api_client.notify(None, event.as_dict(), "None", 1)
+    except Exception as e:
+        LOG.error("Failed sending event to API:  %s", e, exc_info=True)
 
 
 class CADFBuilderEnv:
