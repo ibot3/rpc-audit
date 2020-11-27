@@ -139,14 +139,22 @@ def build_event_from_data(event_data: dict) -> Optional[Event]:
         return None
 
 
-def send_to_audit_api(event: Event):
+def send_to_audit_api(event: Event, role: ObserverRole):
     """
     Send an event to the audit API via http.
     """
 
+    data = {
+        'message_id': event.id,
+        'publisher_id': 'rpc_mw',
+        'event_type': 'audit.rpc.{}'.format('call' if role == ObserverRole.SENDER else 'receive'),
+        'priority': 'INFO',
+        'payload': event.as_dict()
+    }
+
     try:
         api_client = HttpsDriver(None, None, None)
-        api_client.notify(None, event.as_dict(), "None", 1)
+        api_client.notify(None, data, "None", 1)
     except Exception as e:
         LOG.error("Failed sending event to API:  %s", e, exc_info=True)
 
@@ -331,7 +339,7 @@ class CADFBuilderEnv:
                 else:
                     LOG.debug("Saving event %s", event.id)
 
-                    send_to_audit_api(event)
+                    send_to_audit_api(event, role)
 
                     with open("/tmp/rpc_events.txt", "a") as event_file:
                         event_file.write(json.dumps(event.as_dict()))
