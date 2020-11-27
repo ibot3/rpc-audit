@@ -144,12 +144,19 @@ def send_to_audit_api(event: Event, role: ObserverRole):
     Send an event to the audit API via http.
     """
 
+    project_id = None
+
+    for att in event.attachments:
+        if att.name == 'project':
+            project_id = att.content.get('id')
+
     data = {
         'message_id': event.id,
         'publisher_id': 'rpc_mw',
         'event_type': 'audit.rpc.{}'.format('call' if role == ObserverRole.SENDER else 'receive'),
         'priority': 'INFO',
-        'payload': event.as_dict()
+        'payload': event.as_dict(),
+        'project_id': project_id,
     }
 
     try:
