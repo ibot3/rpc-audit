@@ -2,6 +2,7 @@ import json
 import logging
 from _thread import start_new_thread
 from enum import Enum
+from hashlib import sha256
 from typing import Dict, List, Optional, Any
 
 from oslo_messaging.notify._impl_https import HttpsDriver
@@ -203,6 +204,7 @@ class CADFBuildingEnv:
             """
 
             args_dict = jsonutils.to_primitive(args, convert_instances=True)
+            args_json = json.dumps(args_dict)
 
             if self.filter_args is not None:
                 mask = self.filter_args.get(method, {})
@@ -210,7 +212,11 @@ class CADFBuildingEnv:
 
             attachments = [Attachment(typeURI="python/dict",
                                       content={'method': method, 'role': role.name, 'args': args_dict},
-                                      name="rpc_method")]
+                                      name="rpc_method"),
+                           Attachment(name='request_hash', typeURI="python/dict", content={
+                               'algorithm': 'SHA256',
+                               'hash': str(sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest())
+                           })]
 
             if result:
                 attachments.append(Attachment(typeURI="any",

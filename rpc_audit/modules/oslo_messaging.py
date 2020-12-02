@@ -1,6 +1,3 @@
-from hashlib import sha256
-
-from oslo_serialization import jsonutils
 from pycadf.attachment import Attachment
 from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER
 from pycadf.credential import Credential
@@ -124,15 +121,10 @@ def build_attachments(context, method, args, role, result=None):
     - Information about the permissions of the initiator
     """
 
-    args_json = jsonutils.to_primitive(args, convert_instances=True)
-
     attachments = [Attachment(name='project', typeURI="python/dict", content={
         'id': context['ctxt'].project_id,
         'name': context['ctxt'].project_name,
         'domain': context['ctxt'].project_domain
-    }), Attachment(name='request_hash', typeURI="python/dict", content={
-        'algorithm': 'SHA256',
-        'hash': str(sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest())
     }), Attachment(name='permissions', typeURI="python/dict", content={
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,
