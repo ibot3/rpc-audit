@@ -166,7 +166,7 @@ def send_to_audit_api(event: Event, role: ObserverRole):
         LOG.error("Failed sending event to API:  %s", e, exc_info=True)
 
 
-class CADFBuilderEnv:
+class CADFBuildingEnv:
     """
     Builder Environment.
 

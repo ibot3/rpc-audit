@@ -10,10 +10,10 @@ from pycadf.host import Host
 from pycadf.resource import Resource
 
 
-from .os_map import rpc_method_to_cadf_action
-from ..base import CADFBuilderEnv, BuilderType, LOG
+from .oslo_messaging_map import rpc_method_to_cadf_action
+from ..base import CADFBuildingEnv, BuilderType, LOG
 
-builder = CADFBuilderEnv()
+builder = CADFBuildingEnv()
 
 # context:  {'target': ..., 'ctxt': ...}
 
