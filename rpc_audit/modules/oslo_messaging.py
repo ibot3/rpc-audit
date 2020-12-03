@@ -1,5 +1,5 @@
 from pycadf.attachment import Attachment
-from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER
+from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER, OUTCOME_FAILURE
 from pycadf.credential import Credential
 from pycadf.event import EVENT_KEYNAME_ACTION, EVENT_KEYNAME_OUTCOME, EVENT_KEYNAME_INITIATOR, \
     EVENT_KEYNAME_ATTACHMENTS, EVENT_KEYNAME_TARGET, EVENT_KEYNAME_OBSERVER
@@ -50,6 +50,8 @@ def build_outcome(context, method, args, role, result=None):
     else:
         if result:
             return OUTCOME_SUCCESS
+        else:
+            return OUTCOME_FAILURE
 
 
 @builder.builder(EVENT_KEYNAME_INITIATOR, BuilderType.REPLACE)
