@@ -2,7 +2,7 @@ from pycadf.attachment import Attachment
 from pycadf.cadftaxonomy import UNKNOWN, OUTCOME_SUCCESS, ACCOUNT_USER, OUTCOME_FAILURE
 from pycadf.credential import Credential
 from pycadf.event import EVENT_KEYNAME_ACTION, EVENT_KEYNAME_OUTCOME, EVENT_KEYNAME_INITIATOR, \
-    EVENT_KEYNAME_ATTACHMENTS, EVENT_KEYNAME_TARGET, EVENT_KEYNAME_OBSERVER
+    EVENT_KEYNAME_ATTACHMENTS, EVENT_KEYNAME_TARGET, EVENT_KEYNAME_OBSERVER, EVENT_KEYNAME_TAGS
 from pycadf.host import Host
 from pycadf.resource import Resource
 
@@ -134,6 +134,15 @@ def build_attachments(context, method, args, role, result=None):
     }), Attachment(name="request_id", typeURI="pythom/str", content=context['ctxt'].request_id)]
 
     return attachments
+
+
+@builder.builder(EVENT_KEYNAME_TAGS, BuilderType.APPEND)
+def build_tags(context, method, args, role, result=None):
+    """
+    Adds a tag for oslo messaging.
+    """
+
+    return ['oslo.messaging']
 
 
 builder.filter_args = {
