@@ -68,6 +68,7 @@ def build_initiator(context, method, args, role, result=None):
 
     token = context['ctxt'].auth_token
 
+    credential = None
     if token:
         credential = Credential(token)
 
