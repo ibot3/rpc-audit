@@ -65,7 +65,12 @@ def build_initiator(context, method, args, role, result=None):
     type_uri = ACCOUNT_USER
     name = context['ctxt'].user_name
     domain = context['ctxt'].user_domain
-    credential = Credential(context['ctxt'].auth_token)
+
+    token = context['ctxt'].auth_token
+
+    if token:
+        credential = Credential(token)
+
     host = Host(address=context['ctxt'].remote_address)
 
     return Resource(id, type_uri, name, domain=domain, credential=credential,
