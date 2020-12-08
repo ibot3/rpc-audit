@@ -96,11 +96,11 @@ def build_target(context, method, args, role, result=None):
             instances.append(args.get('instance'))
 
         for instance in instances:
-            id = instance.uuid
+            id = instance.get("uuid")
             type_uri = 'compute/machine'
-            name = instance.hostname
+            name = instance.get("hostname")
             domain = context['ctxt'].project_domain
-            host = Host(address=instance.node)
+            host = Host(address=instance.get("node"))
 
             targets.append(Resource(id, type_uri, name, domain=domain, host=host))
 

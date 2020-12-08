@@ -203,15 +203,14 @@ class CADFBuildingEnv:
             - The result after the method has been executed.
             """
 
-            args_dict = jsonutils.to_primitive(args, convert_instances=True)
-            args_json = json.dumps(args_dict)
+            args_json = json.dumps(args)
 
             if self.filter_args is not None:
                 mask = self.filter_args.get(method, {})
-                args_dict = prune_dict(args_dict, mask)
+                args_dict = prune_dict(args, mask)
 
             attachments = [Attachment(typeURI="python/dict",
-                                      content={'method': method, 'role': role.name, 'args': args_dict},
+                                      content={'method': method, 'role': role.name, 'args': args},
                                       name="rpc_method"),
                            Attachment(name='request_hash', typeURI="python/dict", content={
                                'algorithm': 'SHA256',
