@@ -6,7 +6,6 @@ from hashlib import sha256
 from typing import Dict, List, Optional, Any
 
 from oslo_messaging.notify._impl_https import HttpsDriver
-from oslo_serialization import jsonutils
 from pycadf.attachment import Attachment
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS, EVENT_KEYNAME_ATTACHMENTS
@@ -203,18 +202,22 @@ class CADFBuildingEnv:
             - The result after the method has been executed.
             """
 
-            args_json = json.dumps(args)
+            args_raw = context.get("args_raw")
+            hash_args = args if args_raw is None else args_raw
+            args_filtered = dict(args)
+
+            hash_args_json = json.dumps(hash_args)
 
             if self.filter_args is not None:
                 mask = self.filter_args.get(method, {})
-                args_dict = prune_dict(args, mask)
+                args_filtered = prune_dict(args, mask)
 
             attachments = [Attachment(typeURI="python/dict",
-                                      content={'method': method, 'role': role.name, 'args': args},
+                                      content={'method': method, 'role': role.name, 'args': args_filtered},
                                       name="rpc_method"),
                            Attachment(name='request_hash', typeURI="python/dict", content={
                                'algorithm': 'SHA256',
-                               'hash': str(sha256('{}_{}'.format(method, args_json).encode('utf-8')).hexdigest())
+                               'hash': str(sha256('{}_{}'.format(method, hash_args_json).encode('utf-8')).hexdigest())
                            })]
 
             if result:
