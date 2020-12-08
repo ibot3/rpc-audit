@@ -137,7 +137,7 @@ def build_attachments(context, method, args, role, result=None):
         'is_admin': context['ctxt'].is_admin,
         'is_admin_project': context['ctxt'].is_admin_project,
         'roles': context['ctxt'].roles
-    }), Attachment(name="request_id", typeURI="pythom/str", content=context['ctxt'].request_id)]
+    }), Attachment(name="request_id", typeURI="python/str", content=context['ctxt'].request_id)]
 
     return attachments
 
@@ -151,10 +151,10 @@ def build_tags(context, method, args, role, result=None):
     return ['oslo.messaging']
 
 
-#builder.filter_args = {
-#    'reboot_instance': {
-#        'instance': {
-#            'uuid': True
-#        }
-#    }
-#}
+builder.filter_args = {
+    'reboot_instance': {
+        'instance': {
+            'uuid': True
+        }
+    }
+}
