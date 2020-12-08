@@ -151,10 +151,10 @@ def build_tags(context, method, args, role, result=None):
     return ['oslo.messaging']
 
 
-builder.filter_args = {
-    'reboot_instance': {
-        'instance': {
-            'uuid': True
-        }
-    }
-}
+#builder.filter_args = {
+#    'reboot_instance': {
+#        'instance': {
+#            'uuid': True
+#        }
+#    }
+#}
