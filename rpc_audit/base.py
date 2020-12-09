@@ -14,7 +14,7 @@ from pycadf.identifier import generate_uuid
 # Create logger
 LOG = logging.getLogger('rpc_audit')
 fh = logging.FileHandler('/tmp/rpc-audit.log')
-fh.setLevel(logging.DEBUG)
+fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(levelname)s: %(funcName)s:%(lineno)d %(message)s')
 fh.setFormatter(formatter)
 LOG.addHandler(fh)
