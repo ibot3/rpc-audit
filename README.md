@@ -3,10 +3,10 @@
 This packet contains methods and classes that allow to audit/log RPC calls.
 
 ## Usage
-To use this packet, a fitting module (in the modules folder) must exist, where one or more `Builder Environments` 
-(`BuilderEnv`) instances are created and `builders` defined for them. 
+To use this packet, a fitting module (in the modules folder) must exist, where one or more `Builing Environments` 
+(`CADFBuildingEnv`) instances are created and `builders` defined for them. 
 
-Afterwards, the correct `BuilderEnv` instance must be imported into the used RPC library.
+Afterwards, the correct `CADFBuildingEnv` instance must be imported into the used RPC library.
 The RPC library must be modified to call the `rpc_called` method whenever an RPC call is made and the `rpc_received`
 method, when an RPC request has been received and processed.
 If the RPC library supports hooks or something similar, they can be used instead of modifying the library.
@@ -36,7 +36,7 @@ every RPC method. As soon as the `filter_args` are set, only the specified param
 Example:
 
 ```
-builder.filter_args = {
+building_env.filter_args = {
     'reboot_instance': {
         'instance': {
             'uuid': True
