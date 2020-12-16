@@ -3,9 +3,8 @@ import logging
 from _thread import start_new_thread
 from enum import Enum
 from hashlib import sha256
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable
 
-from oslo_messaging.notify._impl_https import HttpsDriver
 from pycadf.attachment import Attachment
 from pycadf.cadftype import EVENTTYPE_ACTIVITY
 from pycadf.event import EVENT_KEYNAMES, Event, EVENT_KEYNAME_EVENTTYPE, EVENT_KEYNAME_TAGS, EVENT_KEYNAME_ATTACHMENTS
@@ -21,6 +20,9 @@ LOG.addHandler(fh)
 LOG.addHandler(logging.StreamHandler())
 
 LOG.info("Running RPC Audit")
+
+
+USE_API = True
 
 
 class ObserverRole(Enum):
@@ -144,26 +146,29 @@ def send_to_audit_api(event: Event, role: ObserverRole):
     Send an event to the audit API via http.
     """
 
-    project_id = None
+    if USE_API:
+        from oslo_messaging.notify._impl_https import HttpsDriver
 
-    for att in event.attachments:
-        if att.name == 'project':
-            project_id = att.content.get('id')
+        project_id = None
 
-    data = {
-        'message_id': event.id,
-        'publisher_id': 'rpc_mw',
-        'event_type': 'audit.rpc.{}'.format('call' if role == ObserverRole.SENDER else 'receive'),
-        'priority': 'INFO',
-        'payload': event.as_dict(),
-        'project_id': project_id,
-    }
+        for att in event.attachments:
+            if att.name == 'project':
+                project_id = att.content.get('id')
 
-    try:
-        api_client = HttpsDriver(None, None, None)
-        api_client.notify(None, data, "None", 1)
-    except Exception as e:
-        LOG.error("Failed sending event to API:  %s", e, exc_info=True)
+        data = {
+            'message_id': event.id,
+            'publisher_id': 'rpc_mw',
+            'event_type': 'audit.rpc.{}'.format('call' if role == ObserverRole.SENDER else 'receive'),
+            'priority': 'INFO',
+            'payload': event.as_dict(),
+            'project_id': project_id,
+        }
+
+        try:
+            api_client = HttpsDriver(None, None, None)
+            api_client.notify(None, data, "None", 1)
+        except Exception as e:
+            LOG.error("Failed sending event to API:  %s", e, exc_info=True)
 
 
 class CADFBuildingEnv:
@@ -179,6 +184,8 @@ class CADFBuildingEnv:
 
     # This map filters, which RPC method parameters should be added to the event
     filter_args: Optional[Dict[str, Dict]] = None
+
+    callback: Callable = None
 
     def __init__(self):
         LOG.debug("BuilderEnv Init")
@@ -232,7 +239,7 @@ class CADFBuildingEnv:
         self.register_builder(EVENT_KEYNAME_TAGS, BuilderType.REPLACE, build_tags)
         self.register_builder(EVENT_KEYNAME_ATTACHMENTS, BuilderType.APPEND, build_attachments)
 
-    def register_builder(self, attr: str, builder_type: BuilderType, func):
+    def register_builder(self, attr: str, builder_type: BuilderType, func: Callable):
         """
         Registeres a given builder for an attribute.
 
@@ -349,6 +356,9 @@ class CADFBuildingEnv:
             events = self.build_events(context, method, args, role, result)
 
             for event in events:
+                if self.callback:
+                    self.callback(event.as_dict())
+
                 if event is None:
                     LOG.warning("Discarded one invalid RPC-Audit event!")
                 else:
@@ -364,7 +374,7 @@ class CADFBuildingEnv:
 
         return
 
-    def process_async(self, context, method: str, args: Optional[Dict], role: ObserverRole, result=None, ):
+    def process_async(self, context, method: str, args: Optional[Dict], role: ObserverRole, result=None):
         """
         Starts the event generation in a new thread.
         """
