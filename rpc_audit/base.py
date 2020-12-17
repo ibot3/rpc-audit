@@ -185,7 +185,8 @@ class CADFBuildingEnv:
     # This map filters, which RPC method parameters should be added to the event
     filter_args: Optional[Dict[str, Dict]] = None
 
-    callback: Callable = None
+    # Optional callback that is called for each generated event
+    callback: Optional[Callable] = None
 
     def __init__(self):
         LOG.debug("BuilderEnv Init")
